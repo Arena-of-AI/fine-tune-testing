@@ -1,0 +1,8 @@
+requests
+streamlit
+streamlit-lottie
+streamlit-webrtc
+openai>=0.27.0
+streamlit-chat 
+jsonlines
+openpyxl
