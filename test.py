@@ -19,13 +19,13 @@ uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx"])
 
 if uploaded_file is not None:
     try:
-        # 讀取excel檔案
+        # read excel
         df = pd.read_excel(uploaded_file)
-        # 轉換成jsonl格式
+        # turn into jsonl
         jsonl = openai.FineTune.prepare_data(df=df)
-        # 顯示檔案轉換已完成
+        # show it is done
         st.success('File conversion completed!')
-        # 下載jsonl檔案
+        # download jsonl file
         href = f'<a href="data:application/jsonl;base64,{jsonl}">Download jsonl file</a>'
         st.markdown(href, unsafe_allow_html=True)
         st.download_button(label="Download jsonl", data=jsonl, file_name="training_data.jsonl", mime="application/jsonl")
