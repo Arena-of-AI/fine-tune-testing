@@ -2,6 +2,7 @@ import streamlit as st
 import openai
 import pandas as pd
 import jsonlines
+from openai import cli
 
 # Set OpenAI API Key
 openai.api_key = st.text_input("請輸入OpenAI API Key：")
