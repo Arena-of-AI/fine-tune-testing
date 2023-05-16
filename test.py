@@ -3,34 +3,33 @@ import openai
 import pandas as pd
 import jsonlines
 from openai import cli
+import streamlit as st
+import subprocess
 
-# Set OpenAI API Key
-openai.api_key = st.text_input("請輸入OpenAI API Key：")
+# 輸入 OpenAI API KEY
+api_key = st.text_input("Enter your OpenAI API KEY")
 
-# Check API Key
-try:
-    models = openai.Model.list()
-except Exception as e:
-    st.error(f"無法連接OpenAI API，請檢查API Key是否正確：{e}")
-    st.stop()
+# 定義 CLI 按鈕
+cli_buttons = [
+    {"name": "List of all fine-tunes tasks", "command": "openai api fine_tunes.list"},
+    {"name": "Check the status", "command": "openai api fine_tunes.follow -i"},
+    {"name": "Yes", "command": "Y"},
+    {"name": "No", "command": "n"},
+    {"name": "Delete a fine-tuned model", "command": "openai api models.delete -i <FINE_TUNED_MODEL>"},
+    {"name": "Check All Status", "command": "openai.FineTune.list()"}
+]
 
+# 執行 CLI 指令
+def execute_command(command):
+    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+    output, error = process.communicate()
+    return output.decode("utf-8")
 
-# allow user upload training data（使用excel格式）
-uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx"])
+# 顯示終端輸出文本區域
+terminal_output = st.empty()
 
-if uploaded_file is not None:
-    try:
-        # read excel
-        df = pd.read_excel(uploaded_file)
-        # turn into jsonl
-        jsonl = openai.FineTune.prepare_data(df=df)
-        # show it is done
-        st.success('File conversion completed!')
-        # download jsonl file
-        href = f'<a href="data:application/jsonl;base64,{jsonl}">Download jsonl file</a>'
-        st.markdown(href, unsafe_allow_html=True)
-        st.download_button(label="Download jsonl", data=jsonl, file_name="training_data.jsonl", mime="application/jsonl")
-    except errors.AuthenticationError:
-        st.error("Invalid OpenAI API key")
-    except Exception as e:
-        st.error(f"Error: {e}")
+# 監聽按鈕點擊事件
+for button in cli_buttons:
+    if st.button(button["name"]):
+        command_output = execute_command(button["command"])
+        terminal_output.text(command_output)
