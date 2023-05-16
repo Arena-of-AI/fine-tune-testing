@@ -1,9 +1,4 @@
 import streamlit as st
-import openai
-import pandas as pd
-import jsonlines
-from openai import cli
-import streamlit as st
 import subprocess
 
 # 輸入 OpenAI API KEY
@@ -21,7 +16,8 @@ cli_buttons = [
 
 # 執行 CLI 指令
 def execute_command(command):
-    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+    command_with_api_key = f"{command} --api-key {api_key}"
+    process = subprocess.Popen(command_with_api_key.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
     return output.decode("utf-8")
 
