@@ -6,12 +6,12 @@ api_key = st.text_input("Enter your OpenAI API KEY")
 
 # 定義 CLI 按鈕
 cli_buttons = [
-    {"name": "List of all fine-tunes tasks", "command": "openai --api-key {} api fine_tunes.list".format(api_key)},
-    {"name": "Check the status", "command": "openai --api-key {} api fine_tunes.follow -i".format(api_key)},
-    {"name": "Yes", "command": "openai --api-key {} api Y".format(api_key)},
-    {"name": "No", "command": "openai --api-key {} api n".format(api_key)},
-    {"name": "Delete a fine-tuned model", "command": "openai --api-key {} api models.delete -i <FINE_TUNED_MODEL>".format(api_key)},
-    {"name": "Check All Status", "command": "openai --api-key {} FineTune.list()".format(api_key)}
+    {"name": "List of all fine-tunes tasks", "command": f"openai api fine_tunes.list --api-key {api_key}"},
+    {"name": "Check the status", "command": f"openai api fine_tunes.follow -i <FINE_TUNED_MODEL> --api-key {api_key}"},
+    {"name": "Yes", "command": f"openai api Y --api-key {api_key}"},
+    {"name": "No", "command": f"openai api n --api-key {api_key}"},
+    {"name": "Delete a fine-tuned model", "command": f"openai api models.delete -i <FINE_TUNED_MODEL> --api-key {api_key}"},
+    {"name": "Check All Status", "command": f"openai FineTune.list() --api-key {api_key}"}
 ]
 
 # 執行 CLI 指令
