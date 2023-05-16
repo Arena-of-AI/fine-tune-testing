@@ -6,18 +6,17 @@ api_key = st.text_input("Enter your OpenAI API KEY")
 
 # 定義 CLI 按鈕
 cli_buttons = [
-    {"name": "List of all fine-tunes tasks", "command": "openai api fine_tunes.list"},
-    {"name": "Check the status", "command": "openai api fine_tunes.follow -i"},
-    {"name": "Yes", "command": "Y"},
-    {"name": "No", "command": "n"},
-    {"name": "Delete a fine-tuned model", "command": "openai api models.delete -i <FINE_TUNED_MODEL>"},
-    {"name": "Check All Status", "command": "openai.FineTune.list()"}
+    {"name": "List of all fine-tunes tasks", "command": "openai --api-key {} api fine_tunes.list".format(api_key)},
+    {"name": "Check the status", "command": "openai --api-key {} api fine_tunes.follow -i".format(api_key)},
+    {"name": "Yes", "command": "openai --api-key {} api Y".format(api_key)},
+    {"name": "No", "command": "openai --api-key {} api n".format(api_key)},
+    {"name": "Delete a fine-tuned model", "command": "openai --api-key {} api models.delete -i <FINE_TUNED_MODEL>".format(api_key)},
+    {"name": "Check All Status", "command": "openai --api-key {} FineTune.list()".format(api_key)}
 ]
 
 # 執行 CLI 指令
 def execute_command(command):
-    command_with_api_key = f"{command} --api-key {api_key}"
-    process = subprocess.Popen(command_with_api_key.split(), stdout=subprocess.PIPE)
+    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
     return output.decode("utf-8")
 
