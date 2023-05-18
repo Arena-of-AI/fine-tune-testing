@@ -25,7 +25,8 @@ def parse_terminal_output(output):
                 "Model Name": item.get("fine_tuned_model"),
                 "Job ID": item.get("id"),
                 "Model": item.get("model"),
-                "Status": item.get("status")
+                "Status": item.get("status"),
+                "Delete": item.get("fine_tuned_model")
             }
             rows.append(row)
         return pd.DataFrame(rows)
@@ -48,8 +49,12 @@ if st.button(cli_button["name"]):
 
     if cli_button["name"] == "List of all fine-tunes tasks":
         parsed_output = parse_terminal_output(command_output)
+        delete_buttons = parsed_output["Delete"].apply(lambda x: st.button(f"Delete {x}"))
+        parsed_output["Delete"] = delete_buttons
         st.table(parsed_output)
-        for index, row in parsed_output.iterrows():
-            delete_button = st.button(f"Delete {row['Model Name']}")
-            if delete_button:
-                delete_model(api_key, row['Model Name'])
+
+# 檢查按鈕點擊事件
+if "Delete" in parsed_output.columns:
+    for index, row in parsed_output.iterrows():
+        if row["Delete"]:
+            delete_model(api_key, row['Model Name'])
