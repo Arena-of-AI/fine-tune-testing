@@ -53,7 +53,8 @@ for button in cli_buttons:
                         "Status": item["status"],
                     }
                 )
-            st.table(table_data)
+            if table_data:
+                st.table(table_data)
     elif button["name"] == "Delete a fine-tuned model":
         if st.button(button["name"]):
             model_names = get_model_names()
