@@ -53,8 +53,7 @@ if st.button(cli_button["name"]):
         parsed_output["Delete"] = delete_buttons
         st.table(parsed_output)
 
-# 檢查按鈕點擊事件
-if "Delete" in parsed_output.columns:
-    for index, row in parsed_output.iterrows():
-        if row["Delete"]:
-            delete_model(api_key, row['Model Name'])
+        # 檢查按鈕點擊事件
+        for index, row in parsed_output.iterrows():
+            if row["Delete"]:
+                delete_model(api_key, row['Model Name'])
