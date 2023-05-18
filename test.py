@@ -24,7 +24,8 @@ def parse_terminal_output(output):
         for item in data["data"]:
             delete_button_key = f"delete_{item.get('id')}"
             delete_button_label = f"Delete {item.get('fine_tuned_model')}"
-            if st.button(delete_button_label, key=delete_button_key):
+            delete_button_clicked = st.button(delete_button_label, key=delete_button_key)
+            if delete_button_clicked:
                 confirm_message = "Are you sure? Please enter 'just do it':"
                 user_input = st.text_input(confirm_message)
                 if user_input.strip() == "just do it":
@@ -36,7 +37,8 @@ def parse_terminal_output(output):
                 "Model Name": item.get("fine_tuned_model"),
                 "Job ID": item.get("id"),
                 "Model": item.get("model"),
-                "Status": item.get("status")
+                "Status": item.get("status"),
+                "Delete": delete_button_clicked
             }
             rows.append(row)
         return rows
@@ -57,9 +59,5 @@ for button in cli_buttons:
             parsed_output = parse_terminal_output(command_output)
             
             # 顯示簡化的資訊表格
-            for row in parsed_output:
-                st.write("Model Name:", row["Model Name"])
-                st.write("Job ID:", row["Job ID"])
-                st.write("Model:", row["Model"])
-                st.write("Status:", row["Status"])
-                st.write("---")
+            if parsed_output:
+                st.table(parsed_output)
