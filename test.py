@@ -58,8 +58,9 @@ for button in cli_buttons:
         if st.button(button["name"]):
             model_names = get_model_names()
             selected_model = st.selectbox("Select a Model Name", model_names)
-            confirm_message = st.text_input("Are you sure? Type 'just do it' to confirm.")
-            if confirm_message == "just do it":
-                command = f"openai --api-key {api_key} api models.delete -i {selected_model}"
-                command_output = execute_command(command)
-                st.text(f"Command Output: {command_output}")
+            if selected_model:
+                confirm_message = st.text_input("Are you sure? Type 'just do it' to confirm.")
+                if confirm_message == "just do it":
+                    command = f"openai --api-key {api_key} api models.delete -i {selected_model}"
+                    command_output = execute_command(command)
+                    st.text(f"Command Output: {command_output}")
