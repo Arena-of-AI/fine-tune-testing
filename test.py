@@ -6,13 +6,7 @@ import json
 api_key = st.text_input("Enter your OpenAI API KEY")
 
 # 定義 CLI 按鈕
-cli_buttons = [
-    {"name": "List of all fine-tunes tasks", "command": f"openai --api-key {api_key} api fine_tunes.list"},
-    {"name": "Delete a fine-tuned model", "command": ""},
-]
-
-# 定義解析終端輸出的變數
-parsed_output = []
+cli_button = {"name": "List of all fine-tunes tasks", "command": f"openai --api-key {api_key} api fine_tunes.list"}
 
 # 執行 CLI 指令
 def execute_command(command):
@@ -20,47 +14,40 @@ def execute_command(command):
     output, error = process.communicate()
     return output.decode("utf-8")
 
-# 解析終端輸出
+# 解析終端資訊並顯示簡化的資訊表格
 def parse_terminal_output(output):
     try:
-        parsed_output = json.loads(output)
-        return parsed_output["data"]
-    except json.JSONDecodeError:
+        data = json.loads(output)
+        rows = []
+        for item in data["data"]:
+            row = {
+                "Model Name": item.get("fine_tuned_model"),
+                "Job ID": item.get("id"),
+                "Model": item.get("model"),
+                "Status": item.get("status")
+            }
+            rows.append(row)
+        return rows
+    except Exception as e:
+        st.error(f"Error parsing terminal output: {str(e)}")
         return []
 
-# 獲取所有 fine-tuned model 的名稱
-def get_model_names():
-    model_names = [item["Model Name"] for item in parsed_output]
-    return model_names
+# 刪除模型
+def delete_model(api_key, model_id):
+    command = f"openai --api-key {api_key} api models.delete -i {model_id}"
+    execute_command(command)
 
 # 顯示終端輸出文本區域
 terminal_output = st.empty()
 
 # 監聽按鈕點擊事件
-for button in cli_buttons:
-    if button["name"] == "List of all fine-tunes tasks":
-        if st.button(button["name"]):
-            command_output = execute_command(button["command"])
-            parsed_output = parse_terminal_output(command_output)
-            table_data = []
-            for index, item in enumerate(parsed_output):
-                table_data.append(
-                    {
-                        "Model Name": item["fine_tuned_model"],
-                        "Job ID": item["id"],
-                        "Model": item["model"],
-                        "Status": item["status"],
-                    }
-                )
-            if table_data:
-                st.table(table_data)
-    elif button["name"] == "Delete a fine-tuned model":
-        if st.button(button["name"]):
-            model_names = get_model_names()
-            selected_model = st.selectbox("Select a Model Name", model_names)
-            if selected_model:
-                confirm_message = st.text_input("Are you sure? Type 'just do it' to confirm.")
-                if confirm_message == "just do it":
-                    command = f"openai --api-key {api_key} api models.delete -i {selected_model}"
-                    command_output = execute_command(command)
-                    st.text(f"Command Output: {command_output}")
+if st.button(cli_button["name"]):
+    command_output = execute_command(cli_button["command"])
+    terminal_output.text(command_output)
+
+    if cli_button["name"] == "List of all fine-tunes tasks":
+        parsed_output = parse_terminal_output(command_output)
+        for row in parsed_output:
+            delete_button = st.button(f"Delete {row['Model Name']}")
+            if delete_button:
+                delete_model(api_key, row['Model Name'])
