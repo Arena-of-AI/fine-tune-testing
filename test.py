@@ -46,7 +46,6 @@ for button in cli_buttons:
             for index, item in enumerate(parsed_output):
                 table_data.append(
                     {
-                        "No.": index + 1,
                         "Model Name": item["fine_tuned_model"],
                         "Job ID": item["id"],
                         "Model": item["model"],
