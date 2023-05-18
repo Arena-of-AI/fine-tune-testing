@@ -8,11 +8,6 @@ api_key = st.text_input("Enter your OpenAI API KEY")
 # 定義 CLI 按鈕
 cli_buttons = [
     {"name": "List of all fine-tunes tasks", "command": f"openai --api-key {api_key} api fine_tunes.list"},
-    {"name": "Check the status", "command": f"openai --api-key {api_key} api fine_tunes.follow -i"},
-    {"name": "Yes", "command": f"openai --api-key {api_key} api Y"},
-    {"name": "No", "command": f"openai --api-key {api_key} api n"},
-    {"name": "Delete a fine-tuned model", "command": f"openai --api-key {api_key} api models.delete -i <FINE_TUNED_MODEL>"},
-    {"name": "Check All Status", "command": f"openai --api-key {api_key} FineTune.list()"}
 ]
 
 # 執行 CLI 指令
@@ -22,18 +17,23 @@ def execute_command(command):
     return output.decode("utf-8")
 
 # 解析終端資訊並顯示簡化的資訊表格
-def display_tasks(output):
-    data = json.loads(output)
-    simplified_data = []
-    for task in data["data"]:
-        simplified_task = {
-            "Model Name": task["fine_tuned_model"],
-            "Job ID": task["id"],
-            "Model": task["model"],
-            "Status": task["status"]
-        }
-        simplified_data.append(simplified_task)
-    st.table(simplified_data)
+def parse_terminal_output(output):
+    try:
+        data = json.loads(output)
+        rows = []
+        for item in data["data"]:
+            row = {
+                "Model Name": item.get("fine_tuned_model"),
+                "Job ID": item.get("id"),
+                "Model": item.get("model"),
+                "Status": item.get("status"),
+                "Delete": ""
+            }
+            rows.append(row)
+        return rows
+    except Exception as e:
+        st.error(f"Error parsing terminal output: {str(e)}")
+        return []
 
 # 顯示終端輸出文本區域
 terminal_output = st.empty()
@@ -45,4 +45,14 @@ for button in cli_buttons:
         terminal_output.text(command_output)
         
         if button["name"] == "List of all fine-tunes tasks":
-            display_tasks(command_output)
+            parsed_output = parse_terminal_output(command_output)
+            
+            for row in parsed_output:
+                if st.button("Delete", key=row["Model Name"]):
+                    confirmation = st.text_input("Are you sure? Type 'just do it' to confirm.")
+                    if confirmation == "just do it":
+                        delete_command = f"openai --api-key {api_key} api models.delete -i {row['Model Name']}"
+                        delete_output = execute_command(delete_command)
+                        terminal_output.text(delete_output)
+                    else:
+                        terminal_output.text("Deletion cancelled.")
