@@ -28,6 +28,11 @@ def parse_terminal_output(output):
     except json.JSONDecodeError:
         return []
 
+# 獲取所有 fine-tuned model 的名稱
+def get_model_names():
+    model_names = [item["Model Name"] for item in parsed_output]
+    return model_names
+
 # 顯示終端輸出文本區域
 terminal_output = st.empty()
 
@@ -51,11 +56,10 @@ for button in cli_buttons:
             st.table(table_data)
     elif button["name"] == "Delete a fine-tuned model":
         if st.button(button["name"]):
-            model_names = [item["Model Name"] for item in parsed_output]
+            model_names = get_model_names()
             selected_model = st.selectbox("Select a Model Name", model_names)
             confirm_message = st.text_input("Are you sure? Type 'just do it' to confirm.")
             if confirm_message == "just do it":
                 command = f"openai --api-key {api_key} api models.delete -i {selected_model}"
                 command_output = execute_command(command)
                 st.text(f"Command Output: {command_output}")
-
