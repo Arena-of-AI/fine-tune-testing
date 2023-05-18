@@ -1,6 +1,7 @@
 import streamlit as st
 import subprocess
 import json
+import pandas as pd
 
 # 輸入 OpenAI API KEY
 api_key = st.text_input("Enter your OpenAI API KEY")
@@ -27,10 +28,10 @@ def parse_terminal_output(output):
                 "Status": item.get("status")
             }
             rows.append(row)
-        return rows
+        return pd.DataFrame(rows)
     except Exception as e:
         st.error(f"Error parsing terminal output: {str(e)}")
-        return []
+        return pd.DataFrame()
 
 # 刪除模型
 def delete_model(api_key, model_id):
@@ -47,7 +48,8 @@ if st.button(cli_button["name"]):
 
     if cli_button["name"] == "List of all fine-tunes tasks":
         parsed_output = parse_terminal_output(command_output)
-        for row in parsed_output:
+        st.table(parsed_output)
+        for index, row in parsed_output.iterrows():
             delete_button = st.button(f"Delete {row['Model Name']}")
             if delete_button:
                 delete_model(api_key, row['Model Name'])
