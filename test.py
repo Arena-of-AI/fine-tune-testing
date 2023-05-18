@@ -47,12 +47,10 @@ for button in cli_buttons:
         if button["name"] == "List of all fine-tunes tasks":
             parsed_output = parse_terminal_output(command_output)
             
+            # 創建簡化的表格資料
+            table_data = []
             for row in parsed_output:
-                if st.button("Delete", key=row["Model Name"]):
-                    confirmation = st.text_input("Are you sure? Type 'just do it' to confirm.")
-                    if confirmation == "just do it":
-                        delete_command = f"openai --api-key {api_key} api models.delete -i {row['Model Name']}"
-                        delete_output = execute_command(delete_command)
-                        terminal_output.text(delete_output)
-                    else:
-                        terminal_output.text("Deletion cancelled.")
+                table_data.append([row["Model Name"], row["Job ID"], row["Model"], row["Status"], ""])
+            
+            # 顯示簡化的資訊表格
+            st.table(table_data)
