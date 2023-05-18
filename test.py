@@ -36,8 +36,7 @@ def parse_terminal_output(output):
                 "Model Name": item.get("fine_tuned_model"),
                 "Job ID": item.get("id"),
                 "Model": item.get("model"),
-                "Status": item.get("status"),
-                "Delete": ""
+                "Status": item.get("status")
             }
             rows.append(row)
         return rows
@@ -57,10 +56,10 @@ for button in cli_buttons:
         if button["name"] == "List of all fine-tunes tasks":
             parsed_output = parse_terminal_output(command_output)
             
-            # 創建簡化的表格資料
-            table_data = []
-            for row in parsed_output:
-                table_data.append([row["Model Name"], row["Job ID"], row["Model"], row["Status"], row["Delete"]])
-            
             # 顯示簡化的資訊表格
-            st.table(table_data)
+            for row in parsed_output:
+                st.write("Model Name:", row["Model Name"])
+                st.write("Job ID:", row["Job ID"])
+                st.write("Model:", row["Model"])
+                st.write("Status:", row["Status"])
+                st.write("---")
