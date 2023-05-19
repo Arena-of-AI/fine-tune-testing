@@ -7,8 +7,7 @@ api_key = st.text_input("Enter your OpenAI API KEY")
 
 # 定義 CLI 按鈕
 cli_buttons = [
-    {"name": "List of all fine-tunes tasks", "command": f"openai --api-key {api_key} api fine_tunes.list"},
-    {"name": "Delete a fine-tuned model", "command": f"openai --api-key {api_key} api models.delete -i {st.text_input('Enter the model name to delete')}"},
+    {"name": "List of all fine-tunes tasks", "command": f"openai --api-key {api_key} api fine_tunes.list"}
 ]
 
 # 執行 CLI 指令
@@ -40,8 +39,6 @@ terminal_output = st.empty()
 
 # 監聽按鈕點擊事件
 for button in cli_buttons:
-    if button["name"] == "Delete a fine-tuned model":
-        st.write("Please input the model name from the above table to delete it:")
     if st.button(button["name"]):
         command_output = execute_command(button["command"])
         terminal_output.text(command_output)
@@ -49,3 +46,20 @@ for button in cli_buttons:
         if button["name"] == "List of all fine-tunes tasks":
             parsed_output = parse_terminal_output(command_output)
             st.table(parsed_output)
+            st.write("---")
+            st.subheader("Delete a Fine-tuned Model")
+            st.write("Please input the model name from the above table to delete it")
+            model_name = st.text_input("Model Name:")
+            delete_button = st.button("Delete this fine-tuned model")
+            if delete_button:
+                found_model = False
+                for item in parsed_output:
+                    if item["Model Name"] == model_name:
+                        found_model = True
+                        break
+                if not found_model:
+                    st.error("Please enter a valid model name.")
+                else:
+                    delete_command = f"openai --api-key {api_key} api models.delete -i {model_name}"
+                    delete_output = execute_command(delete_command)
+                    st.write(delete_output)
