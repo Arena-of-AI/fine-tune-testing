@@ -54,7 +54,7 @@ delete_button = st.button("Delete this fine-tuned model")
 if delete_button:
     model_name = model_name_input.strip()
     if model_name:
-        model_names = [item["Model Name"] for item in parsed_output]
+        model_names = [item["Model Name"] for item in parsed_output] if "parsed_output" in locals() else []
         if model_name in model_names:
             delete_command = f"openai --api-key {api_key} api models.delete -i {model_name}"
             delete_output = execute_command(delete_command)
