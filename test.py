@@ -36,11 +36,6 @@ def parse_terminal_output(output):
     except Exception as e:
         st.error(f"Error parsing terminal output: {str(e)}")
         return []
-
-# 显示 model_names 列表
-if "parsed_output" in locals():
-    model_names = [item["Model Name"] for item in parsed_output]
-    st.text(f"Model Names: {model_names}")
     
     
 # 监听按钮点击事件
@@ -50,6 +45,13 @@ for button in cli_buttons:
         parsed_output = parse_terminal_output(command_output)
         st.table(parsed_output)
 
+        
+# 显示 model_names 列表
+if "parsed_output" in locals():
+    model_names = [item["Model Name"] for item in parsed_output]
+    st.text(f"Model Names: {model_names}")
+    
+    
 # 新增段落和按钮
 st.title("Delete a Trained Model")
 st.text("Please input the model name you want to delete")
