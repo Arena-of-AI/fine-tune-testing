@@ -59,11 +59,12 @@ model_name_input = st.text_input("Model Name:")
 delete_button = st.button("Delete this fine-tuned model")
 
 # 按钮点击事件
+# 按钮点击事件
 if delete_button:
     model_name = model_name_input.strip()
     if model_name:
         model_names = [item["Model Name"] for item in parsed_output] if "parsed_output" in locals() else []
-        model_names_full = [name for name in model_names if model_name in name]
+        model_names_full = [name for name in model_names if model_name == name]
         if model_names_full:
             delete_command = f"openai --api-key {api_key} api models.delete -i {model_names_full[0]}"
             delete_output = execute_command(delete_command)
@@ -72,3 +73,4 @@ if delete_button:
             st.error("Please enter a valid model name.")
     else:
         st.error("Please enter a model name.")
+
