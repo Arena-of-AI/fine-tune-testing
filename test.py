@@ -1,6 +1,7 @@
 import streamlit as st
 import subprocess
 import json
+from streamlit import session_state as state
 
 # 輸入 OpenAI API KEY
 api_key = st.text_input("Enter your OpenAI API KEY")
@@ -37,6 +38,10 @@ def parse_terminal_output(output):
 # 顯示終端輸出文本區域
 terminal_output = st.empty()
 
+# 初始狀態
+if "delete_model" not in state:
+    state.delete_model = ""
+
 # 監聽按鈕點擊事件
 for button in cli_buttons:
     if st.button(button["name"]):
@@ -50,21 +55,21 @@ for button in cli_buttons:
             # 刪除模型區域
             st.write("---")
             st.subheader("Delete a Fine-tuned Model")
-            delete_model = st.text_input("Model Name:")
+            state.delete_model = st.text_input("Model Name:", state.delete_model)
             delete_button = st.button("Delete this fine-tuned model")
             delete_output = ""
             
-            # 检查删除事件
-            if delete_button and delete_model:
+            # 檢查刪除事件
+            if delete_button and state.delete_model:
                 found_model = False
                 for item in parsed_output:
-                    if item["Model Name"] == delete_model:
+                    if item["Model Name"] == state.delete_model:
                         found_model = True
                         break
                 if not found_model:
                     st.error("Please enter a valid model name.")
                 else:
-                    delete_command = f"openai --api-key {api_key} api models.delete -i {delete_model}"
+                    delete_command = f"openai --api-key {api_key} api models.delete -i {state.delete_model}"
                     delete_output = execute_command(delete_command)
             
             # 顯示刪除結果
