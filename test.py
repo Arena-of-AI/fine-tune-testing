@@ -53,7 +53,9 @@ for button in cli_buttons:
             delete_model = st.text_input("Model Name:")
             delete_button = st.button("Delete this fine-tuned model")
             delete_output = ""
-            if delete_button:
+            
+            # 检查删除事件
+            if delete_button and delete_model:
                 found_model = False
                 for item in parsed_output:
                     if item["Model Name"] == delete_model:
