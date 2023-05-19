@@ -46,20 +46,25 @@ for button in cli_buttons:
         if button["name"] == "List of all fine-tunes tasks":
             parsed_output = parse_terminal_output(command_output)
             st.table(parsed_output)
+
+            # 刪除模型區域
             st.write("---")
             st.subheader("Delete a Fine-tuned Model")
-            delete_model = st.empty()
-            model_name = delete_model.text_input("Model Name:")
+            delete_model = st.text_input("Model Name:")
             delete_button = st.button("Delete this fine-tuned model")
+            delete_output = ""
             if delete_button:
                 found_model = False
                 for item in parsed_output:
-                    if item["Model Name"] == model_name:
+                    if item["Model Name"] == delete_model:
                         found_model = True
                         break
                 if not found_model:
                     st.error("Please enter a valid model name.")
                 else:
-                    delete_command = f"openai --api-key {api_key} api models.delete -i {model_name}"
+                    delete_command = f"openai --api-key {api_key} api models.delete -i {delete_model}"
                     delete_output = execute_command(delete_command)
-                    st.write(delete_output)
+            
+            # 顯示刪除結果
+            if delete_output:
+                st.write(delete_output)
