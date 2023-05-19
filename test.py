@@ -43,6 +43,8 @@ for button in cli_buttons:
         command_output = execute_command(button["command"])
         parsed_output = parse_terminal_output(command_output)
         st.table(parsed_output)
+        st.text("Terminal Output:")
+        st.code(command_output)
 
 # 新增段落和按钮
 st.title("Delete a Trained Model")
