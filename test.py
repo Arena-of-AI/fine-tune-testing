@@ -45,6 +45,7 @@ for button in cli_buttons:
         st.table(parsed_output)
 
 # 新增段落和按鈕
+st.title("Delete a Trained Model")
 st.text("Please input the model name you want to delete")
 model_name_input = st.text_input("Model Name:")
 delete_button = st.button("Delete this fine-tuned model")
