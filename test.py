@@ -2,6 +2,9 @@ import streamlit as st
 import subprocess
 import json
 
+# 設定標題
+st.title("Check All Your Tasks")
+
 # 輸入 OpenAI API KEY
 api_key = st.text_input("Enter your OpenAI API KEY")
 
@@ -34,21 +37,15 @@ def parse_terminal_output(output):
         st.error(f"Error parsing terminal output: {str(e)}")
         return []
 
-# 顯示終端輸出文本區域
-terminal_output = st.empty()
-
 # 監聽按鈕點擊事件
 for button in cli_buttons:
     if st.button(button["name"]):
         command_output = execute_command(button["command"])
-        terminal_output.text(command_output)
-        
-        if button["name"] == "List of all fine-tunes tasks":
-            parsed_output = parse_terminal_output(command_output)
-            st.table(parsed_output)
+        parsed_output = parse_terminal_output(command_output)
+        st.table(parsed_output)
 
 # 新增段落和按鈕
-st.text("Please input the model name from the above table to delete it")
+st.text("Please input the model name you want to delete")
 model_name_input = st.text_input("Model Name:")
 delete_button = st.button("Delete this fine-tuned model")
 
@@ -60,7 +57,7 @@ if delete_button:
         if model_name in model_names:
             delete_command = f"openai --api-key {api_key} api models.delete -i {model_name}"
             delete_output = execute_command(delete_command)
-            terminal_output.text(delete_output)
+            st.text(delete_output)
         else:
             st.error("Please enter a valid model name.")
     else:
