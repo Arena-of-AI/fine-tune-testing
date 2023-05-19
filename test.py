@@ -36,15 +36,14 @@ def parse_terminal_output(output):
     except Exception as e:
         st.error(f"Error parsing terminal output: {str(e)}")
         return []
-    
-    
+
 # 监听按钮点击事件
 for button in cli_buttons:
     if st.button(button["name"]):
         command_output = execute_command(button["command"])
         parsed_output = parse_terminal_output(command_output)
         st.table(parsed_output)
-    
+
 # 新增段落和按钮
 st.title("Delete a Trained Model")
 st.text("Please input the model name you want to delete")
@@ -57,6 +56,14 @@ if delete_button:
     if model_name:
         delete_command = f"openai --api-key {api_key} api models.delete -i {model_name}"
         delete_output = execute_command(delete_command)
-        st.text(delete_output)
+        
+        if not delete_output:
+            st.error("Please enter a valid model name.")
+        else:
+            delete_response = json.loads(delete_output)
+            if "deleted" in delete_response and delete_response["deleted"]:
+                st.success("Deletion Succeeded")
+            else:
+                st.error("Deletion Failed")
     else:
         st.error("Please enter a model name.")
