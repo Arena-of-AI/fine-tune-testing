@@ -44,23 +44,7 @@ for button in cli_buttons:
         parsed_output = parse_terminal_output(command_output)
         st.table(parsed_output)
 
-# 新增段落和按钮
-st.title("Delete a Trained Model")
-st.text("Please input the model name you want to delete")
-model_name_input = st.text_input("Model Name:")
-delete_button = st.button("Delete this fine-tuned model")
-
-# 按钮点击事件
-if delete_button:
-    model_name = model_name_input.strip()
-    if model_name:
-        model_names = [item["Model Name"] for item in parsed_output] if "parsed_output" in locals() else []
-        model_names_full = [name for name in model_names if model_name in name]
-        if model_names_full:
-            delete_command = f"openai --api-key {api_key} api models.delete -i {model_names_full[0]}"
-            delete_output = execute_command(delete_command)
-            st.text(delete_output)
-        else:
-            st.error("Please enter a valid model name.")
-    else:
-        st.error("Please enter a model name.")
+# 显示 model_names 列表
+if "parsed_output" in locals():
+    model_names = [item["Model Name"] for item in parsed_output]
+    st.text(f"Model Names: {model_names}")
