@@ -28,7 +28,7 @@ def parse_terminal_output(output):
                 "Job ID": item.get("id"),
                 "Model": item.get("model"),
                 "Status": item.get("status"),
-                "Delete": st.checkbox(item.get("fine_tuned_model"))
+                "Delete": False
             }
             rows.append(row)
         return rows
@@ -39,6 +39,9 @@ def parse_terminal_output(output):
 # 顯示終端輸出文本區域
 terminal_output = st.empty()
 
+# 是否顯示表格
+show_table = False
+
 # 監聽按鈕點擊事件
 for button in cli_buttons:
     if st.button(button["name"]):
@@ -46,15 +49,24 @@ for button in cli_buttons:
         terminal_output.text(command_output)
         
         if button["name"] == "List of all fine-tunes tasks":
-            parsed_output = parse_terminal_output(command_output)
-            table = st.table(parsed_output)
+            show_table = True
+        
+        if button["name"] == "Delete a fine-tuned model":
+            show_table = False
             
+            parsed_output = parse_terminal_output(command_output)
             delete_model_indices = [i for i, row in enumerate(parsed_output) if row["Delete"]]
             delete_model_ids = [parsed_output[i]["Model Name"] for i in delete_model_indices]
-            delete_model_button = st.button("Delete the model", key="delete_button", disabled=(len(delete_model_indices) == 0))
             
-            if delete_model_button:
-                for model_id in delete_model_ids:
-                    delete_command = f"openai --api-key {api_key} api models.delete -i {model_id}"
-                    execute_command(delete_command)
-                st.success("Models deleted successfully.")
+            if len(delete_model_indices) > 0:
+                st.warning("Please select models to delete in the table.")
+            
+            for model_id in delete_model_ids:
+                delete_command = f"openai --api-key {api_key} api models.delete -i {model_id}"
+                execute_command(delete_command)
+            
+            st.success("Models deleted successfully.")
+    
+    if show_table:
+        parsed_output = parse_terminal_output(command_output)
+        table = st.table(parsed_output)
