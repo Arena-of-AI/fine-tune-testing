@@ -48,8 +48,8 @@ for button in cli_buttons:
             st.table(parsed_output)
             st.write("---")
             st.subheader("Delete a Fine-tuned Model")
-            st.write("Please input the model name from the above table to delete it")
-            model_name = st.text_input("Model Name:")
+            delete_model = st.empty()
+            model_name = delete_model.text_input("Model Name:")
             delete_button = st.button("Delete this fine-tuned model")
             if delete_button:
                 found_model = False
