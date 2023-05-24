@@ -1,65 +1,49 @@
-import streamlit as st
-import subprocess
-import json
+import streamlit.ReportThread as ReportThread
+from streamlit.server.Server import Server
 
-# 设置标题
-st.title("Check All Your Tasks")
+# 创建或获取SessionState对象
+def get_session_state():
+    session_id = ReportThread.get_report_ctx().session_id
+    this_session = None
+    current_server = Server.get_current()
+    if hasattr(current_server, "_session_infos"):
+        for session_info in current_server._session_infos.values():
+            if session_info.session.id == session_id:
+                this_session = session_info.session
+    if this_session is None:
+        raise RuntimeError("Couldn't get the session object.")
+    if not hasattr(this_session, "_custom_session_state"):
+        this_session._custom_session_state = SessionState()
+    return this_session._custom_session_state
 
-# 输入 OpenAI API KEY
-api_key = st.text_input("Enter your OpenAI API KEY")
+# 定义SessionState类
+class SessionState:
+    def __init__(self):
+        self.data = []
+        self.show_table = False
 
-# 定义 CLI 按钮
-cli_buttons = [
-    {"name": "List of all fine-tunes tasks", "command": f"openai --api-key {api_key} api fine_tunes.list"},
-]
+# 获取SessionState对象
+session_state = get_session_state()
 
-# 表格数据和状态
-table_data = []
-show_table = False
-
-# 执行 CLI 指令
-def execute_command(command):
-    process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
-    output, error = process.communicate()
-    return output.decode("utf-8")
-
-# 解析终端输出并显示简化的信息表格
-def parse_terminal_output(output):
-    try:
-        data = json.loads(output)
-        rows = []
-        for item in data["data"]:
-            row = {
-                "Model Name": item.get("fine_tuned_model"),
-                "Job ID": item.get("id"),
-                "Model": item.get("model"),
-                "Status": item.get("status")
-            }
-            rows.append(row)
-        return rows
-    except Exception as e:
-        st.error(f"Error parsing terminal output: {str(e)}")
-        return []
+# ...
 
 # 监听按钮点击事件
 for button in cli_buttons:
     if st.button(button["name"]):
         command_output = execute_command(button["command"])
         parsed_output = parse_terminal_output(command_output)
-        table_data = parsed_output
-        show_table = True
+        session_state.data = parsed_output
+        session_state.show_table = True
+
+# ...
 
 # 显示表格
-if show_table:
-    st.table(table_data)
+if session_state.show_table:
+    st.table(session_state.data)
     st.text("Terminal Output:")
     st.code(command_output)
 
-# 新增段落和按钮
-st.title("Delete a Trained Model")
-st.text("Please input the model name you want to delete")
-model_name_input = st.text_input("Model Name:")
-delete_button = st.button("Delete this fine-tuned model")
+# ...
 
 # 按钮点击事件
 if delete_button:
@@ -76,6 +60,6 @@ if delete_button:
                 st.success("Deletion Succeeded")
             else:
                 st.error("Deletion Failed")
-        show_table = True
+        session_state.show_table = True
     else:
         st.error("Please enter a model name.")
