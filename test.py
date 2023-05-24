@@ -50,11 +50,11 @@ def parse_terminal_output(output):
         st.error(f"Error parsing terminal output: {str(e)}")
         return []
 
-# 列出所有可選擇的模型
 def list_available_models():
-    models = openai.OpenAIApi().models()
-    available_models = [model["id"] for model in models["models"] if model["status"] != "deleted"]
+    models = openai.ChatCompletion.list_models()
+    available_models = [model["id"] for model in models if model["status"] != "deleted"]
     return available_models
+
 
 
 
