@@ -13,6 +13,10 @@ cli_buttons = [
     {"name": "List of all fine-tunes tasks", "command": f"openai --api-key {api_key} api fine_tunes.list"},
 ]
 
+# 表格数据和状态
+table_data = []
+show_table = False
+
 # 执行 CLI 指令
 def execute_command(command):
     process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
@@ -42,9 +46,14 @@ for button in cli_buttons:
     if st.button(button["name"]):
         command_output = execute_command(button["command"])
         parsed_output = parse_terminal_output(command_output)
-        st.table(parsed_output)
-        st.text("Terminal Output:")
-        st.code(command_output)
+        table_data = parsed_output
+        show_table = True
+
+# 显示表格
+if show_table:
+    st.table(table_data)
+    st.text("Terminal Output:")
+    st.code(command_output)
 
 # 新增段落和按钮
 st.title("Delete a Trained Model")
@@ -67,5 +76,6 @@ if delete_button:
                 st.success("Deletion Succeeded")
             else:
                 st.error("Deletion Failed")
+        show_table = True
     else:
         st.error("Please enter a model name.")
