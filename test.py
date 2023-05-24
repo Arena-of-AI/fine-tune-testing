@@ -2,17 +2,24 @@ import streamlit as st
 import subprocess
 import json
 
-# 创建或获取SessionState对象
-def get_session_state():
-    if "session_state" not in st.session_state:
-        st.session_state.session_state = SessionState()
-    return st.session_state.session_state
+# 设置标题
+st.title("Check All Your Tasks")
 
-# 定义SessionState类
+# 输入 OpenAI API KEY
+api_key = st.text_input("Enter your OpenAI API KEY")
+
+# 定义 CLI 按钮
+cli_buttons = [
+    {"name": "List of all fine-tunes tasks", "command": f"openai --api-key {api_key} api fine_tunes.list"},
+]
+
+# 创建用于保存状态的类
 class SessionState:
     def __init__(self):
         self.data = []
         self.show_table = False
+
+session_state = SessionState()
 
 # 执行 CLI 指令
 def execute_command(command):
@@ -38,20 +45,6 @@ def parse_terminal_output(output):
         st.error(f"Error parsing terminal output: {str(e)}")
         return []
 
-# 获取SessionState对象
-session_state = get_session_state()
-
-# 设置标题
-st.title("Check All Your Tasks")
-
-# 输入 OpenAI API KEY
-api_key = st.text_input("Enter your OpenAI API KEY")
-
-# 定义 CLI 按钮
-cli_buttons = [
-    {"name": "List of all fine-tunes tasks", "command": f"openai --api-key {api_key} api fine_tunes.list"},
-]
-
 # 监听按钮点击事件
 for button in cli_buttons:
     if st.button(button["name"]):
@@ -59,12 +52,12 @@ for button in cli_buttons:
         parsed_output = parse_terminal_output(command_output)
         session_state.data = parsed_output
         session_state.show_table = True
+        st.text("Terminal Output:")
+        st.code(command_output)
 
 # 显示表格
 if session_state.show_table:
     st.table(session_state.data)
-    st.text("Terminal Output:")
-    st.code(command_output)
 
 # 新增段落和按钮
 st.title("Delete a Trained Model")
@@ -87,6 +80,5 @@ if delete_button:
                 st.success("Deletion Succeeded")
             else:
                 st.error("Deletion Failed")
-        session_state.show_table = True
     else:
         st.error("Please enter a model name.")
