@@ -1,12 +1,16 @@
 import streamlit as st
 import subprocess
 import json
+import openai
 
 # 设置标题
 st.title("Check All Your Tasks")
 
 # 输入 OpenAI API KEY
 api_key = st.text_input("Enter your OpenAI API KEY")
+
+# 初始化 OpenAI API
+openai.api_key = api_key
 
 # 定义 CLI 按钮
 cli_buttons = [
@@ -18,6 +22,7 @@ class SessionState:
     def __init__(self):
         self.data = []
         self.show_table = False
+        self.available_models = []
 
 session_state = SessionState()
 
@@ -44,6 +49,12 @@ def parse_terminal_output(output):
     except Exception as e:
         st.error(f"Error parsing terminal output: {str(e)}")
         return []
+
+# 列出所有可選擇的模型
+def list_available_models():
+    models = openai.ChatCompletion.list_models()
+    available_models = [model["id"] for model in models["data"] if model["status"] != "deleted"]
+    return available_models
 
 # 监听按钮点击事件
 for button in cli_buttons:
@@ -85,3 +96,13 @@ if delete_button:
         session_state.show_table = True
     else:
         st.error("Please enter a model name.")
+
+# 顯示按鈕 "List Available Models"
+if st.button("List Available Models"):
+    session_state.available_models = list_available_models()
+
+# 顯示可選擇的模型下拉選單
+selected_model = st.selectbox("Select a model", session_state.available_models)
+
+# 執行其他操作
+# ...
