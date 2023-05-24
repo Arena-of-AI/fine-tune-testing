@@ -52,9 +52,10 @@ def parse_terminal_output(output):
 
 # 列出所有可選擇的模型
 def list_available_models():
-    models = openai.ChatCompletion.list_models()
-    available_models = [model["id"] for model in models["data"] if model["status"] != "deleted"]
+    models = openai.Completion.list_models()
+    available_models = [model["id"] for model in models["models"] if model["status"] != "deleted"]
     return available_models
+
 
 # 监听按钮点击事件
 for button in cli_buttons:
