@@ -74,6 +74,7 @@ if delete_button:
         
         if not delete_output:
             st.error("Please enter a valid model name.")
+            session_state.show_table = True
         else:
             delete_response = json.loads(delete_output)
             if "deleted" in delete_response and delete_response["deleted"]:
