@@ -80,5 +80,8 @@ if delete_button:
                 st.success("Deletion Succeeded")
             else:
                 st.error("Deletion Failed")
+        
+        # 设置 show_table 为 True，以便在重新渲染时显示表格
+        session_state.show_table = True
     else:
         st.error("Please enter a model name.")
