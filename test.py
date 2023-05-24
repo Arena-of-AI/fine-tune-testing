@@ -52,9 +52,10 @@ def parse_terminal_output(output):
 
 # 列出所有可選擇的模型
 def list_available_models():
-    models = openai.Completion.list_models()
+    models = openai.OpenAIApi().models()
     available_models = [model["id"] for model in models["models"] if model["status"] != "deleted"]
     return available_models
+
 
 
 # 监听按钮点击事件
