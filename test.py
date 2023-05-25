@@ -51,12 +51,9 @@ for button in cli_buttons:
         command_output = execute_command(button["command"])
         parsed_output = parse_terminal_output(command_output)
         session_state.data = parsed_output
-        session_state.show_table = True
+        
         st.text("Terminal Output:")
         st.code(command_output)
-
-        session_state.show_table = True
-        session_state.show_table = True
         
         
 # 显示表格
