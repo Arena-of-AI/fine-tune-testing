@@ -75,19 +75,18 @@ if delete_button:
         
         if not delete_output:
             st.error("Please enter a valid model name.")
-            session_state.show_table = True
         else:
             delete_response = json.loads(delete_output)
             if "deleted" in delete_response and delete_response["deleted"]:
                 st.success("Deletion Succeeded")
+                # 设置 show_table 为 True，以便在重新渲染时显示表格
+                session_state.show_table = True
             else:
                 st.error("Deletion Failed")
         
-        # 设置 show_table 为 True，以便在重新渲染时显示表格
-        session_state.show_table = True
     else:
-        session_state.show_table = True
-        if session_state.show_table:
-            st.table(session_state.data)
         st.error("Please enter a model name.")
-        
+
+# 显示表格
+if session_state.show_table:
+    st.table(session_state.data)
