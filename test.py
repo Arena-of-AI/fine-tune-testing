@@ -88,6 +88,6 @@ if delete_button:
     else:
         session_state.show_table = True
         if session_state.show_table:
-        st.table(session_state.data)
+            st.table(session_state.data)
         st.error("Please enter a model name.")
         
