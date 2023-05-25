@@ -86,7 +86,6 @@ if delete_button:
         
     else:
         st.error("Please enter a model name.")
+        if session_state.show_table:
+            st.table(session_state.data)
 
-# 显示表格
-if session_state.show_table:
-    st.table(session_state.data)
