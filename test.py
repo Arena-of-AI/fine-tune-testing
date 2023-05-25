@@ -51,7 +51,7 @@ for button in cli_buttons:
         command_output = execute_command(button["command"])
         parsed_output = parse_terminal_output(command_output)
         session_state.data = parsed_output
-        
+        session_state.show_table = True
         st.text("Terminal Output:")
         st.code(command_output)
         
@@ -87,5 +87,7 @@ if delete_button:
         session_state.show_table = True
     else:
         session_state.show_table = True
+        if session_state.show_table:
+        st.table(session_state.data)
         st.error("Please enter a model name.")
         
