@@ -13,14 +13,6 @@ cli_buttons = [
     {"name": "List of all fine-tunes tasks", "command": f"openai --api-key {api_key} api fine_tunes.list"},
 ]
 
-# 创建用于保存状态的类
-class SessionState:
-    def __init__(self):
-        self.data = []
-        self.show_table = False
-
-session_state = SessionState()
-
 # 执行 CLI 指令
 def execute_command(command):
     process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
@@ -45,6 +37,15 @@ def parse_terminal_output(output):
         st.error(f"Error parsing terminal output: {str(e)}")
         return []
 
+# 创建会话状态对象
+class SessionState:
+    def __init__(self):
+        self.show_table = False
+        self.data = []
+
+# 初始化会话状态
+session_state = SessionState()
+
 # 监听按钮点击事件
 for button in cli_buttons:
     if st.button(button["name"]):
@@ -52,22 +53,15 @@ for button in cli_buttons:
         parsed_output = parse_terminal_output(command_output)
         session_state.data = parsed_output
         session_state.show_table = True
-        st.text("Terminal Output:")
-        st.code(command_output)
-        
-        
-# 显示表格
-if session_state.show_table:
-    st.table(session_state.data)
 
 # 新增段落和按钮
 st.title("Delete a Trained Model")
 st.text("Please input the model name you want to delete")
 model_name_input = st.text_input("Model Name:")
-delete_button = st.button("Delete this fine-tuned model")
+delete_button_clicked = st.button("Delete this fine-tuned model")
 
 # 按钮点击事件
-if delete_button:
+if delete_button_clicked:
     model_name = model_name_input.strip()
     if model_name:
         delete_command = f"openai --api-key {api_key} api models.delete -i {model_name}"
@@ -79,13 +73,11 @@ if delete_button:
             delete_response = json.loads(delete_output)
             if "deleted" in delete_response and delete_response["deleted"]:
                 st.success("Deletion Succeeded")
-                # 设置 show_table 为 True，以便在重新渲染时显示表格
-                session_state.show_table = True
             else:
                 st.error("Deletion Failed")
-        
     else:
-        if session_state.show_table:
-           st.table(session_state.data)
+        st.error("Please enter a model name.")
 
-
+# 显示表格
+if session_state.show_table:
+    st.table(session_state.data)
