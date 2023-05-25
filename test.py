@@ -85,5 +85,6 @@ if delete_button:
         # 设置 show_table 为 True，以便在重新渲染时显示表格
         session_state.show_table = True
     else:
-        st.error("Please enter a model name.")
         session_state.show_table = True
+        st.error("Please enter a model name.")
+        
