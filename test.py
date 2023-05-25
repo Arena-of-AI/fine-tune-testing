@@ -87,7 +87,7 @@ if delete_button:
     else:
         # 如果模型名称为空白，则设置 show_table 为 True，并显示原有的表格数据
         session_state.show_table = True
+        if session_state.show_table:
+           st.table(session_state.data)
 
-# 显示表格
-if session_state.show_table:
-    st.table(session_state.data)
+
