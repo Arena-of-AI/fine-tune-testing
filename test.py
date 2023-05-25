@@ -55,6 +55,10 @@ for button in cli_buttons:
         st.text("Terminal Output:")
         st.code(command_output)
 
+        session_state.show_table = True
+        session_state.show_table = True
+        
+        
 # 显示表格
 if session_state.show_table:
     st.table(session_state.data)
