@@ -86,3 +86,4 @@ if delete_button:
         session_state.show_table = True
     else:
         st.error("Please enter a model name.")
+        session_state.show_table = True
