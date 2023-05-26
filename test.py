@@ -11,7 +11,6 @@ api_key = st.text_input("Enter your OpenAI API KEY")
 # 初始化 OpenAI API
 openai.api_key = api_key
 
-# 获取所有 fine-tuned 任务列表
 def list_fine_tuned_tasks():
     fine_tuned_tasks = openai.FineTune.list()
     rows = []
@@ -28,13 +27,14 @@ def list_fine_tuned_tasks():
             "Model": model_id,
             "Status": task["status"],
             "Created at": created_at,
-            "Learning Rate Multiplier": task["learning_rate_multiplier"],
-            "Number of Epochs": task["n_epochs"],
-            "Prompt Loss Weight": task["prompt_loss_weight"],
+            "Learning Rate Multiplier": task.get("learning_rate_multiplier", "-"),
+            "Number of Epochs": task.get("n_epochs", "-"),
+            "Prompt Loss Weight": task.get("prompt_loss_weight", "-"),
             "Training File": filename if filename else "-"
         }
         rows.append(row)
     return rows
+
 
 
 # 显示表格
