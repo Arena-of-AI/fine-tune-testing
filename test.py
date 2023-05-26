@@ -16,7 +16,7 @@ def list_fine_tuned_tasks():
     fine_tuned_tasks = openai.FineTune.list()
     rows = []
     for task in fine_tuned_tasks["data"]:
-        curated_at = datetime.fromtimestamp(task["curated_at"]).strftime("%Y-%m-%d %H:%M:%S")
+        created_at = datetime.fromtimestamp(task["created_at"]).strftime("%Y-%m-%d %H:%M:%S")
         training_file = task["training_files"][0] if task["training_files"] else None
         filename = training_file["filename"] if training_file else None
         row = {
@@ -24,7 +24,7 @@ def list_fine_tuned_tasks():
             "Job ID": task["id"],
             "Model": task["model"]["id"],
             "Status": task["status"],
-            "Curated at": curated_at,
+            "Created at": created_at,
             "Learning Rate Multiplier": task["learning_rate_multiplier"],
             "Number of Epochs": task["n_epochs"],
             "Prompt Loss Weight": task["prompt_loss_weight"],
