@@ -1,3 +1,4 @@
+import datetime
 import openai
 import streamlit as st
 
@@ -14,8 +15,10 @@ def parse_terminal_output(terminal_output):
         hyperparams = task["hyperparams"]
         training_file = task["training_files"][0]["filename"]
 
+        created_at = datetime.datetime.fromtimestamp(task["created_at"]).strftime("%Y-%m-%d %H:%M:%S")
+
         row = {
-            "Time": task["created_at"],
+            "Time": created_at,
             "Model Name": task["fine_tuned_model"],
             "Job ID": task["id"],
             "Parent Model": task["model"],
