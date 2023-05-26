@@ -19,10 +19,13 @@ def list_fine_tuned_tasks():
         created_at = datetime.fromtimestamp(task["created_at"]).strftime("%Y-%m-%d %H:%M:%S")
         training_file = task["training_files"][0] if task["training_files"] else None
         filename = training_file["filename"] if training_file else None
+        model = task["model"]
+        model_name = model["name"] if isinstance(model, dict) else "-"
+        model_id = model["id"] if isinstance(model, dict) else "-"
         row = {
-            "Model Name": task["model"]["name"],
+            "Model Name": model_name,
             "Job ID": task["id"],
-            "Model": task["model"]["id"],
+            "Model": model_id,
             "Status": task["status"],
             "Created at": created_at,
             "Learning Rate Multiplier": task["learning_rate_multiplier"],
@@ -32,6 +35,7 @@ def list_fine_tuned_tasks():
         }
         rows.append(row)
     return rows
+
 
 # 显示表格
 if api_key:
