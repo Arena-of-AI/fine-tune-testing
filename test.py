@@ -1,12 +1,9 @@
 import openai
 import streamlit as st
 
-# 读取 API 密钥
-api_key = st.text_input("Enter your OpenAI API key", type="password")
-openai.api_key = api_key
-
 # 获取终端输出并显示表格
-def list_fine_tuned_tasks():
+def list_fine_tuned_tasks(api_key):
+    openai.api_key = api_key
     terminal_output = openai.FineTune.list()
     return terminal_output["data"]
 
@@ -33,11 +30,13 @@ def parse_terminal_output(terminal_output):
 
     return rows
 
-# 获取终端输出
-tasks = list_fine_tuned_tasks()
+# 读取 API 密钥
+api_key = st.text_input("Enter your OpenAI API key", type="password")
 
-# 解析终端输出为表格行列表
-rows = parse_terminal_output(tasks)
-
-# 显示表格
-st.table(rows)
+# 当用户提供 API 密钥时，获取终端输出并解析为表格行列表
+if api_key:
+    tasks = list_fine_tuned_tasks(api_key)
+    rows = parse_terminal_output(tasks)
+    st.table(rows)
+else:
+    st.warning("Please enter your OpenAI API key.")
